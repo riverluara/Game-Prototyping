@@ -6,8 +6,8 @@ public class PlayerMovement : MonoBehaviour {
     //public GameObject playerJelly;
     // Use this for initialization
     public Camera mainCamera;
-    public float forceAmount = 5.0f;
-
+    public float maxForceAmount = 3.0f;
+    public float maxDistance = 2.0f;
     private Rigidbody playerRb;
     private Transform currentPosition;
     private Vector3 bounceDirection;
@@ -69,13 +69,15 @@ public class PlayerMovement : MonoBehaviour {
 
         Vector3 location = mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10.0f));
         location.z = 0.0f;
-        
+        float distance = Vector3.Distance(location, this.transform.position);
+        float index = Mathf.Clamp(distance / maxDistance, 0.0f, 1.0f);
         Debug.Log(Input.mousePosition);
         Debug.Log(location);
+        Debug.Log(distance);
         bounceDirection = this.transform.position - location;
         Debug.Log(bounceDirection);
         isClikingBall = false;
-        playerRb.AddForce(bounceDirection * forceAmount, ForceMode.Impulse);
+        playerRb.AddForce(bounceDirection * maxForceAmount*index, ForceMode.Impulse);
            
     }
 }
