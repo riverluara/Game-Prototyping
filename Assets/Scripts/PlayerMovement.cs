@@ -4,14 +4,23 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour {
     //public GameObject playerJelly;
+
     // Use this for initialization
+    public delegate void CollisionAction();
+    public static event CollisionAction CollisionRowHappened;
+    public static event CollisionAction CollisionColumnHappened;
+
+    public delegate void DemageAction(Vector3 currentPosition);
+    public static event DemageAction SawtoothDamageHappened;
+
     public Camera mainCamera;
     public float maxForceAmount = 3.0f;
     public float maxDistance = 2.0f;
     private Rigidbody playerRb;
-    private Transform currentPosition;
+    private Vector3 currentPosition;
     private Vector3 bounceDirection;
     private bool isClikingBall = false;
+    
     
 	void Start () {
         playerRb = this.GetComponent<Rigidbody>();
@@ -28,8 +37,11 @@ public class PlayerMovement : MonoBehaviour {
         }
         if (Input.GetMouseButtonUp(0) && isClikingBall == true)
         {
+            GameManager.isFirstSawtooth = true;
+            playerRb.useGravity = true;
             PlayerBounce();
             isClikingBall = false;
+
 
         }
     }
@@ -79,5 +91,34 @@ public class PlayerMovement : MonoBehaviour {
         isClikingBall = false;
         playerRb.AddForce(bounceDirection * maxForceAmount*index, ForceMode.Impulse);
            
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        playerRb.Sleep();
+        playerRb.useGravity = false;
+        if (collision.transform.tag == "StickyRow")
+        {
+            
+            CollisionRowHappened();
+        }
+        if (collision.transform.tag == "StickyColumn")
+        {
+
+            CollisionColumnHappened();
+        }
+        if(collision.transform.tag == "SawTooth" )
+        {
+            Debug.Log("s");
+            
+            SawtoothDamageHappened(currentPosition);
+           
+        }
+
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        playerRb.useGravity = true;
     }
 }
