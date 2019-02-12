@@ -6,9 +6,14 @@ public class PlayerMovement : MonoBehaviour {
     //public GameObject playerJelly;
 
     // Use this for initialization
-    public delegate void CollisionAction();
+    public delegate void CollisionAction(Collision collision);
     public static event CollisionAction CollisionRowHappened;
     public static event CollisionAction CollisionColumnHappened;
+    
+
+    public delegate void SwitchCollision(string name);
+    public static event SwitchCollision UpSwitchHappened;
+    public static event SwitchCollision DownSwitchHappened;
 
     public delegate void DemageAction(Vector3 currentPosition);
     public static event DemageAction SawtoothDamageHappened;
@@ -24,7 +29,9 @@ public class PlayerMovement : MonoBehaviour {
     
 	void Start () {
         playerRb = this.GetComponent<Rigidbody>();
-	}
+        currentPosition = new Vector3(this.gameObject.transform.position.x, this.gameObject.transform.position.y, this.gameObject.transform.position.z);
+
+    }
 
     // Update is called once per frame
     void Update()
@@ -37,6 +44,7 @@ public class PlayerMovement : MonoBehaviour {
         }
         if (Input.GetMouseButtonUp(0) && isClikingBall == true)
         {
+            currentPosition = new Vector3(this.gameObject.transform.position.x, this.gameObject.transform.position.y, this.gameObject.transform.position.z);
             GameManager.isFirstSawtooth = true;
             playerRb.useGravity = true;
             PlayerBounce();
@@ -95,30 +103,48 @@ public class PlayerMovement : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision)
     {
-        playerRb.Sleep();
-        playerRb.useGravity = false;
+        
         if (collision.transform.tag == "StickyRow")
         {
-            
-            CollisionRowHappened();
+            FreezeGravity();
+            CollisionRowHappened(collision);
         }
         if (collision.transform.tag == "StickyColumn")
         {
-
-            CollisionColumnHappened();
+            FreezeGravity();
+            CollisionColumnHappened(collision);
         }
         if(collision.transform.tag == "SawTooth" )
         {
             Debug.Log("s");
-            
+            FreezeGravity();
             SawtoothDamageHappened(currentPosition);
            
+        }
+        if(collision.transform.tag == "SwitchUp")
+        {
+            FreezeGravity();
+            UpSwitchHappened(collision.transform.name);
+        }
+        if (collision.transform.tag == "SwitchDown")
+        {
+            FreezeGravity();
+            DownSwitchHappened(collision.transform.name);
         }
 
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        playerRb.useGravity = true;
+       
+            playerRb.useGravity = true;
+       
+        
+    }
+    void FreezeGravity()
+    {
+        playerRb.Sleep();
+        playerRb.useGravity = false;
+
     }
 }

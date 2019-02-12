@@ -8,6 +8,8 @@ TagManager:
   - StickyRow
   - StickyColumn
   - SawTooth
+  - SwitchUp
+  - SwitchDown
   layers:
   - Default
   - TransparentFX
