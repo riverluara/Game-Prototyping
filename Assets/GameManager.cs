@@ -14,11 +14,14 @@ public class GameManager : MonoBehaviour {
     public Text tutorial;
     public GameObject tempParent;
     public Text bonusCount;
+    public Text winText;
+    public int winBonus = 4;
     [SerializeField] private int playerHealth = 5;
     private bool isRow = true;
     private Rigidbody playerRb;
     private bool isFirstTutorial = true;
     private bool isFirstTouch = true;
+    private bool isSwitchTouched = false;
     private int bonus = 0;
 	void Start () {
 
@@ -28,7 +31,8 @@ public class GameManager : MonoBehaviour {
         healthText.text = playerHealth.ToString();
         bonusCount.text = bonus.ToString();
         loseText.gameObject.SetActive(false);
-	}
+        winText.gameObject.SetActive(false);
+    }
 	
 	// Update is called once per frame
     
@@ -38,24 +42,40 @@ public class GameManager : MonoBehaviour {
         PlayerMovement.CollisionColumnHappened += MoveUpOrDown;
         Move(isRow, tempParent);
         PlayerMovement.SawtoothDamageHappened += GetHurt;
-        PlayerMovement.UpSwitchHappened += BonusAdd;
-        PlayerMovement.DownSwitchHappened += BonusAdd;
-
+        //PlayerMovement.SwitchDown += BonusAdd;
+        SwitchMovement.SwitchIsTouched += BonusAdd;
         if (playerHealth <= 0)
         {
             loseText.gameObject.SetActive(true);
         }
+        if(bonus >= winBonus)
+        {
+            winText.gameObject.SetActive(true);
+        }
 	}
-    void BonusAdd(string name)
+    void BonusAdd(bool switchStatus)
     {
-        bonus++;
-        bonusCount.text = bonus.ToString();
+         
+        
+        if (!switchStatus && !isSwitchTouched)
+        {
+            bonus++;
+            bonusCount.text = bonus.ToString();
+            isSwitchTouched = true;
+
+        }
+         
+
+
+        
+
 
     }
     void MoveRightOrLeft(Collision collision)
     {
 
         isRow = true;
+        isSwitchTouched = false;
         tempParent = collision.gameObject;
 
     }
@@ -68,6 +88,7 @@ public class GameManager : MonoBehaviour {
             isFirstTutorial = false;
         }
         isRow = false;
+        isSwitchTouched = false;
         tempParent = collision.gameObject;
 
     }

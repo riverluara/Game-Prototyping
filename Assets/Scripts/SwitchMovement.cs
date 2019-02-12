@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class SwitchMovement : MonoBehaviour {
     private bool isTouched = false;
+    public delegate void SwitchTouched(bool SwitchStatus);
+    public static SwitchTouched SwitchIsTouched;
+ 
 	// Use this for initialization
 	void Start () {
 		
@@ -18,8 +21,11 @@ public class SwitchMovement : MonoBehaviour {
     {
         if (!isTouched && name == this.gameObject.transform.name)
         {
+
             this.gameObject.transform.position += Vector3.up * 0.3f;
-            isTouched = true;
+            SwitchIsTouched(isTouched);
+            this.isTouched = true;
+            
         }
        
     }
@@ -28,7 +34,9 @@ public class SwitchMovement : MonoBehaviour {
         if (!isTouched && name == this.gameObject.transform.name)
         {
             this.gameObject.transform.position += Vector3.down * 0.3f;
-            isTouched = true;
+            SwitchIsTouched(isTouched);
+            this.isTouched = true;
+           
         }
             
 

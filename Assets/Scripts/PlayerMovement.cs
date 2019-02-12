@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour {
     public delegate void SwitchCollision(string name);
     public static event SwitchCollision UpSwitchHappened;
     public static event SwitchCollision DownSwitchHappened;
+    public static event SwitchCollision SwitchDown;
 
     public delegate void DemageAction(Vector3 currentPosition);
     public static event DemageAction SawtoothDamageHappened;
@@ -91,11 +92,9 @@ public class PlayerMovement : MonoBehaviour {
         location.z = 0.0f;
         float distance = Vector3.Distance(location, this.transform.position);
         float index = Mathf.Clamp(distance / maxDistance, 0.0f, 1.0f);
-        Debug.Log(Input.mousePosition);
-        Debug.Log(location);
-        Debug.Log(distance);
+       
         bounceDirection = this.transform.position - location;
-        Debug.Log(bounceDirection);
+      
         isClikingBall = false;
         playerRb.AddForce(bounceDirection * maxForceAmount*index, ForceMode.Impulse);
            
@@ -116,7 +115,7 @@ public class PlayerMovement : MonoBehaviour {
         }
         if(collision.transform.tag == "SawTooth" )
         {
-            Debug.Log("s");
+            
             FreezeGravity();
             SawtoothDamageHappened(currentPosition);
            
@@ -136,7 +135,9 @@ public class PlayerMovement : MonoBehaviour {
 
     private void OnCollisionExit(Collision collision)
     {
-       
+      //
+     
+        
             playerRb.useGravity = true;
        
         
